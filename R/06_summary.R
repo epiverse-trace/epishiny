@@ -5,11 +5,13 @@ summary_statement_ui <- function(
 ) {
   ns <- shiny::NS(id)
 
-  bslib::card(
-    title = title,
-    bslib::card_text(
-      id = ns("summary"), # Use the same id as in the server function
-      ""
+  shiny::tagList(
+    bslib::card(
+      title = title,
+      shiny::tags$div(
+        id = ns("summary"),
+        ""
+      )
     )
   )
 }
@@ -17,7 +19,9 @@ summary_statement_ui <- function(
 #' @export
 summary_server <- function(
     id,
-    df
+    df,
+    date_column = "date", # Add a date_column argument with a default value of "date"
+    selected_date = NULL # Add a selected_date argument with a default value of NULL
 ) {
   shiny::moduleServer(
     id,
@@ -25,14 +29,19 @@ summary_server <- function(
       ns <- session$ns
 
       output$summary <- shiny::renderText({
-        # Get the most updated date from the DataFrame (assuming there's a date column named "date")
-        most_updated_date <- max(df$date, na.rm = TRUE)
+        # If selected_date is not provided, use the maximum date from the DataFrame
+        if (is.null(selected_date)) {
+          selected_date <- max(df[[date_column]], na.rm = TRUE)
+        }
 
-        # Calculate the total number of cases
-        total_cases <- nrow(df)
+        # Filter the data for the selected date
+        df_filtered <- df[df[[date_column]] == selected_date, ]
+
+        # Calculate the total number of cases for the selected date
+        total_cases <- nrow(df_filtered)
 
         # Create the statement
-        statement <- glue::glue("As of {most_updated_date}, the total number of cases is {total_cases}.")
+        statement <- glue::glue("As of {selected_date}, the total number of cases is {total_cases}.")
 
         statement
       })

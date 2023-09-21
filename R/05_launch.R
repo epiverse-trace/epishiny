@@ -13,9 +13,9 @@
 #' @return No return value, a shiny app is launched.
 #' @example inst/examples/docs/launch-module.R
 #' @export
-launch_module <- function(module = c("time", "place", "person"), ...) {
+launch_module <- function(module = c("time", "place", "person", "summary"), ...) {
 
-  module <- match.arg(module, c("time", "place", "person"), several.ok = FALSE)
+  module <- match.arg(module, c("time", "place", "person", "summary"), several.ok = FALSE)
   mod_ui <- paste0(module, "_ui")
   mod_server <- paste0(module, "_server")
   # prepare arguments for ui and server
